@@ -1,6 +1,4 @@
 .vscode/c_cpp_properties.json
 .vscode/tasks.json
-.vs/algospot/v16/Browse.VC.db
-.vs/algospot/v16/Browse.VC.opendb
-.vs/ProjectSettings.json
-.vs/slnx.sqlite
+algospot.*
+.vs
