@@ -1,16 +1,15 @@
 #include <iostream>
-#include <list>
-#include <iterator>
+
 using namespace std;
 
-enum checkType {
-  TYPE1 = 1,  /* RIGHT, UP */
-  TYPE2 = 2,  /* LEFT, UP */
-  TYPE3 = 3,  /* LEFT, DOWN */
-  TYPE4 = 4   /* RIGHT, DOWN */
+enum class checkType {
+  TYPE1 = 1,  /* R (กๆ) U (ก่) */
+  TYPE2 = 2,  /* L (ก็) U (ก่) */
+  TYPE3 = 3,  /* L (ก็) D (ก้) */
+  TYPE4 = 4   /* R (กๆ) D (ก้) */
 };
 
-typedef enum checkType checkType;
+typedef enum class checkType checkType;
 
 void findCase (int pos_h, int pos_w);
 bool checkPos (int pos_h, int pos_w, checkType type);
@@ -43,27 +42,28 @@ int main(void) {
     }
 
     findCase (1, 1);
+    cout << cnt << endl;
   }
-  cout << cnt << endl;
+  
 
   return 0;
 }
 
 bool checkPos (int pos_h, int pos_w, checkType type) {
   switch (type) {
-  case TYPE1:
+  case checkType::TYPE1:
     if (board[pos_h - 1][pos_w] == '.' && board[pos_h][pos_w + 1] == '.')
       return true;
     break;
-  case TYPE2:
+  case checkType::TYPE2:
     if (board[pos_h - 1][pos_w] == '.' && board[pos_h][pos_w - 1] == '.')
       return true;
     break;
-  case TYPE3:
+  case checkType::TYPE3:
     if (board[pos_h + 1][pos_w] == '.' && board[pos_h][pos_w - 1] == '.')
       return true;
     break;
-  case TYPE4:
+  case checkType::TYPE4:
     if (board[pos_h + 1][pos_w] == '.' && board[pos_h][pos_w + 1] == '.')
       return true;
     break;
@@ -74,21 +74,24 @@ bool checkPos (int pos_h, int pos_w, checkType type) {
 
 
 void findCase (int pos_h, int pos_w) {
-  if (pos_h == H + 1 && pos_w == W + 1) {
-    for (h = 1; h < H + 1; h++) {
-      for (w = 1; w < W + 1; w++) {
+  while (board[pos_h][pos_w] != '.') {
+    /* reached to the end */
+    if (pos_h == H && pos_w == W + 1) {
+      for (h = 1; h < H + 1; h++) {
+        for (w = 1; w < W + 1; w++) {
+          if (board[h][w] == '.')
+            break;
+        }
         if (board[h][w] == '.')
           break;
       }
-      if (board[h][w] == '.')
-        break;
+      if (h == H && w == W + 1)
+        cnt++;
+
+      return;
     }
 
-    if (h == H + 1 && w == W + 1)
-      cnt++;
-  }
 
-  while (board[pos_h][pos_w] != '.') {
     if (pos_w == W + 1) {
       pos_w = 1;
       pos_h = pos_h + 1;
@@ -97,28 +100,63 @@ void findCase (int pos_h, int pos_w) {
       pos_w += 1;
     }
   }
-  
-  board[pos_h][pos_w] = '#';
 
-  if (checkPos (pos_h, pos_w, TYPE1)) {
-    board[pos_h - 1][pos_w] = '#';
-    board[pos_h][pos_w + 1] = '#';
-    findCase (pos_h, pos_w + 2);
+	
+
+  while (pos_h != H || pos_w != W + 1) {
+    if (board[pos_h][pos_w] == '#') {
+      if (pos_w == W + 1) {
+        pos_w = 1;
+        pos_h = pos_h + 1;
+      }
+      else {
+        pos_w += 1;
+      }
+      continue;
+    }
+    board[pos_h][pos_w] = '#';
+    if (checkPos(pos_h, pos_w, checkType::TYPE1)) {
+      board[pos_h - 1][pos_w] = '#';
+      board[pos_h][pos_w + 1] = '#';
+      findCase(pos_h, pos_w + 1);
+      board[pos_h - 1][pos_w] = '.';
+      board[pos_h][pos_w + 1] = '.';
+    }
+
+    if (checkPos(pos_h, pos_w, checkType::TYPE2)) {
+      board[pos_h - 1][pos_w] = '#';
+      board[pos_h][pos_w - 1] = '#';
+      findCase(pos_h, pos_w + 1);
+      board[pos_h - 1][pos_w] = '.';
+      board[pos_h][pos_w - 1] = '.';
+    }
+
+    if (checkPos(pos_h, pos_w, checkType::TYPE3)) {
+      board[pos_h + 1][pos_w] = '#';
+      board[pos_h][pos_w - 1] = '#';
+      findCase(pos_h, pos_w + 1);
+      board[pos_h + 1][pos_w] = '.';
+      board[pos_h][pos_w - 1] = '.';
+    }
+
+    if (checkPos(pos_h, pos_w, checkType::TYPE4)) {
+      board[pos_h + 1][pos_w] = '#';
+      board[pos_h][pos_w + 1] = '#';
+      findCase(pos_h, pos_w + 1);
+      board[pos_h + 1][pos_w] = '.';
+      board[pos_h][pos_w + 1] = '.';
+    }
+
+    board[pos_h][pos_w] = '.';
+    
+    if (pos_w == W + 1) {
+      pos_w = 1;
+      pos_h = pos_h + 1;
+    }
+    else {
+      pos_w += 1;
+    }
   }
-  if (checkPos (pos_h, pos_w, TYPE2)) {
-    board[pos_h - 1][pos_w] = '#';
-    board[pos_h][pos_w - 1] = '#';
-    findCase (pos_h, pos_w + 1);
-  }
-  if (checkPos (pos_h, pos_w, TYPE3)) {
-    board[pos_h + 1][pos_w] = '#';
-    board[pos_h][pos_w - 1] = '#';
-    findCase (pos_h, pos_w + 1);
-  }
-  if (checkPos (pos_h, pos_w, TYPE4)) {
-    board[pos_h + 1][pos_w] = '#';
-    board[pos_h][pos_w + 1] = '#';
-    findCase (pos_h, pos_w + 2);
-  }
+
   return;
 }
