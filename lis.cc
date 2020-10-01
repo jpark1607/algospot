@@ -1,78 +1,56 @@
 #include <iostream>
-#include <list>
-
 using namespace std;
 
+/* Global Variable */
+int seq[500];
+int cache[500];
+int N = 0;
 
+/* Function Declaration */
+int getLength(int i); 
+
+/* Main */
 int main(void) {
 	int C = 0, c = 0;
-	int N = 0, n = 0;
-	int num = 0;
+  int n = 0;
+  int max_len;
 
 	cin >> C;
 
 	for (c = 0; c < C; c++) {
-		list<int> list1;
-		list<int> list2;
-		list<int>::iterator iter1;
-		list<int>::iterator iter2;
+    cin >> N;
 
-		cin >> N;
-		
-		if (N == 0) {
-			cout << 0 << endl;
-		}
-		cin >> num;
-		if (N == 1) {
-			cout << 1 << endl;
-		}
+    for (n = 0; n < N; n++) {
+      cin >> seq[n];
+      cache[n] = 0;
+    }
 
-		list1.push_back(num);
-		iter1 = list1.begin();
+    /* last value's length is always 1 */
+    cache[N - 1] = 1;
+    max_len = 1;
 
-		for (n = 1; n < N; n++) {
-			cin >> num;
-			if (num > *iter1) {
-				list1.push_back(num);
-				iter1++;
-			}
-			else {
-				list2.push_back(num);
-				iter2 = list2.begin();
-				n++;
-				break;
-			}
-		}
+    for (n = 0; n < N - 1; n++) {
+      max_len = max(max_len, getLength(n));
+    }
 
-		for (; n < N; n++) {
-			cin >> num;
-
-			if (num > *iter1 || num > *iter2) {
-				if (num > *iter1) {
-					list1.push_back(num);
-					iter1++;
-				}
-				if (num > *iter2) {
-					list2.push_back(num);
-					iter2++;
-				}
-				continue;
-			}
-			else if (*iter1 >= num && *iter2 >= num) {
-				if (list2.size() > list1.size()) {
-					list1.swap(list2);
-					iter1 = iter2;
-				}
-
-				list2.clear();
-				list2.push_back(num);
-				iter2 = list2.begin();
-			}
-		}
-		
-		cout << (list1.size() > list2.size() ? list1.size() : list2.size()) << endl;
-
+	  cout << max_len << endl;
 	}
-
 	return 0;
+}
+
+/* Function Implementation */
+int getLength(int i) {
+  if (cache[i] > 0) 
+    return cache[i];
+
+  int max_len = 0;
+  int p = i + 1;
+
+  for ( ; p < N; p++) {
+    if (seq[p] > seq[i])
+      max_len = max(max_len, getLength(p));
+  }
+
+  cache[i] = max_len + 1;
+  return cache[i];
 }
