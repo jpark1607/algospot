@@ -1,6 +1,11 @@
 #include <iostream>
 using namespace std;
 
+/* Global Variable */
+
+/* Function Declaration */
+
+/* Main */
 int main(void) {
 	int C = 0, c = 0;
 
@@ -13,3 +18,5 @@ int main(void) {
 	}
 	return 0;
 }
+
+/* Function Implementation */
